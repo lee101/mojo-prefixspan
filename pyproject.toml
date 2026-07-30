@@ -1,0 +1,22 @@
+[project]
+name = "mojo-prefixspan"
+version = "0.1.0"
+description = "PrefixSpan sequential pattern mining with a Mojo core"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Lee Penkman", email = "leepenkman@gmail.com" }]
+dependencies = ["numpy"]
+
+[project.optional-dependencies]
+dev = ["pytest", "prefixspan==0.5.2"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "python" }
+
+[tool.setuptools.packages.find]
+where = ["python"]
