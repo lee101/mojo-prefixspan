@@ -98,10 +98,13 @@ identical ordered results.
 
 | case | mojo-prefixspan | prefixspan 0.5.2 | result | patterns |
 | --- | ---: | ---: | ---: | ---: |
-| frequent, planted motif (10k x 40) | 70.98 ms | 957.41 ms | 13.49x faster | 7 |
-| frequent, dense (3k x 24) | 114.80 ms | 1992.75 ms | 17.36x faster | 432 |
-| frequent, sparse output (10k x 32) | 117.03 ms | 1723.28 ms | 14.73x faster | 65 |
-| topk 25 (2k x 24) | 13.43 ms | 164.41 ms | 12.24x faster | 25 |
+| frequent, planted motif (10k x 40) | 66.14 ms | 915.51 ms | 13.84x faster | 7 |
+| frequent, dense (3k x 24) | 117.41 ms | 1235.66 ms | 10.52x faster | 432 |
+| frequent, sparse output (10k x 32) | 119.21 ms | 1419.63 ms | 11.91x faster | 65 |
+| topk 25 (2k x 24) | 13.30 ms | 170.87 ms | 12.85x faster | 25 |
+
+Every measured kernel remains more than 5x faster than upstream, so this
+optimization review made no further kernel changes.
 
 Default top-k uses the same dense database buffers as frequent mining, with
 native support-ranked pruning and upstream-compatible tie ordering. Customized
