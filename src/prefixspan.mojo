@@ -1,6 +1,7 @@
 """Prefix-projected sequential pattern mining over caller-owned buffers."""
 
-from std.algorithm import parallelize
+from max.algorithm import parallelize
+from std.runtime import initialize_runtime
 from std.sys.info import simd_width_of as simdwidthof
 
 comptime IPtr = UnsafePointer[Int64, AnyOrigin[mut=True]]
@@ -319,7 +320,7 @@ def topk_rec(
                 next_row,
                 item,
             )
-            @parameter
+            @__parameter
             def project_chunk(chunk: Int):
                 var seq_begin = chunk * PROJECT_CHUNK_SIZE
                 var seq_end = min(seq_begin + PROJECT_CHUNK_SIZE, nseq)
@@ -393,6 +394,7 @@ def mps_mine(
     pattern_items_addr: Int,
     emit_flag: Int,
 ) abi("C"):
+    initialize_runtime()
     var db = IPtr(unsafe_from_address=db_addr)
     var offsets = IPtr(unsafe_from_address=offsets_addr)
     var positions = IPtr(unsafe_from_address=positions_addr)
@@ -456,6 +458,7 @@ def mps_topk(
     result_items_addr: Int,
     parallel_threshold: Int,
 ) abi("C"):
+    initialize_runtime()
     var db = IPtr(unsafe_from_address=db_addr)
     var offsets = IPtr(unsafe_from_address=offsets_addr)
     var positions = IPtr(unsafe_from_address=positions_addr)
