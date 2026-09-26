@@ -79,16 +79,16 @@ def test_native_topk_simd_tails_stay_serial():
     ours.maxlen = theirs.maxlen = 5
     assert ours.topk(11) == theirs.topk(11)
     assert ours._topk_fast_calls == 1
-    assert ours._last_parallel_calls == 0
+    assert ours._last_chunked_projections == 0
 
 
-def test_native_topk_parallel_threshold():
+def test_native_topk_chunked_projection_threshold():
     db = [[seq % 3, (seq + 1) % 3, seq % 2] for seq in range(4_101)]
     ours, theirs = pair(db)
     ours.maxlen = theirs.maxlen = 2
-    ours._parallel_threshold = 4_096
+    ours._projection_chunk_min_sequences = 4_096
     assert ours.topk(7) == theirs.topk(7)
-    assert ours._last_parallel_calls > 0
+    assert ours._last_chunked_projections > 0
 
 
 def test_native_topk_falls_back_for_incomparable_items():

@@ -1,6 +1,5 @@
 """Prefix-projected sequential pattern mining over caller-owned buffers."""
 
-from max.algorithm import parallelize
 from std.runtime import initialize_runtime
 from std.sys.info import simd_width_of as simdwidthof
 
@@ -310,20 +309,8 @@ def topk_rec(
         fill_i64(positions + next_row, nseq, -2)
         if nseq >= parallel_threshold:
             var chunks = (nseq + PROJECT_CHUNK_SIZE - 1) // PROJECT_CHUNK_SIZE
-
-            @__copy_capture(
-                db,
-                offsets,
-                positions,
-                nseq,
-                pos_row,
-                next_row,
-                item,
-            )
-            @__parameter
-            def project_chunk(chunk: Int):
+            for chunk in range(chunks):
                 var seq_begin = chunk * PROJECT_CHUNK_SIZE
-                var seq_end = min(seq_begin + PROJECT_CHUNK_SIZE, nseq)
                 project_range(
                     db,
                     offsets,
@@ -332,10 +319,8 @@ def topk_rec(
                     next_row,
                     item,
                     seq_begin,
-                    seq_end,
+                    min(seq_begin + PROJECT_CHUNK_SIZE, nseq),
                 )
-
-            parallelize[project_chunk](chunks, min(chunks, 8))
             stats[1] += 1
         else:
             project_range(

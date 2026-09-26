@@ -130,7 +130,7 @@ class PrefixSpan:
     """
 
     defaultkey = staticmethod(lambda patt, matches: len(matches))
-    _parallel_threshold = 32_768
+    _projection_chunk_min_sequences = 32_768
 
     def __init__(self, db):
         self._db = db
@@ -138,7 +138,7 @@ class PrefixSpan:
         self._results: list[Any] = []
         self._fast_calls = 0
         self._topk_fast_calls = 0
-        self._last_parallel_calls = 0
+        self._last_chunked_projections = 0
 
     def _mine_fast(self, minsup: int, maxlen: int) -> list[tuple[int, Pattern]]:
         db = self._db
@@ -329,10 +329,12 @@ class PrefixSpan:
             supports,
             lengths,
             result_items,
-            checked_i64(self._parallel_threshold, "parallel threshold"),
+            checked_i64(
+                self._projection_chunk_min_sequences, "projection chunk threshold"
+            ),
         )
         self._topk_fast_calls += 1
-        self._last_parallel_calls = int(stats[1])
+        self._last_chunked_projections = int(stats[1])
         result_count = int(stats[0])
         if not 0 <= result_count <= k or np.any(lengths[:result_count] < 0) or np.any(
             lengths[:result_count] > depth_limit

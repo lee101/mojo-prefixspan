@@ -124,8 +124,10 @@ offset array delimiting sequences. At each PrefixSpan depth, Mojo stores the
 earliest matching end position for every sequence. Scanning the corresponding
 suffixes produces extension supports and preserves upstream's first-encounter
 order. Bulk position initialization and pattern copies use native-width SIMD
-with scalar tails. Top-k projection scans parallelize only at 32,768 sequences
-or more, in 4,096-sequence chunks capped at eight workers.
+with scalar tails. Top-k projection scans switch to a 4,096-sequence chunk loop
+at 32,768 sequences or more. The projection is a memory-bound gather: each
+visited item costs one `int64` load and a compare, about 0.25 flops per byte of
+item data, so the chunk loop runs serially on the calling thread.
 
 The miner makes two native passes. The first counts patterns and output item
 cells; Python then allocates exact-size NumPy result buffers, and the second
