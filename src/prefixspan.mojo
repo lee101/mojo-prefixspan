@@ -24,7 +24,7 @@ def copy_i64(source: IPtr, destination: IPtr, size: Int):
     while i + W <= size:
         destination.store[alignment=1](
             i,
-            source.load[width=W, alignment=1](i),
+            source.unsafe_load[width=W, alignment=1](i),
         )
         i += W
     while i < size:
